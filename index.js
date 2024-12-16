@@ -22,7 +22,7 @@ app.listen(port, () => {
   console.log(`Servidor desplegado en puerto: ${port}`);
 });
 
-// Definimos una estructura de datos
+// Definimos una estructura de datos 
 // (temporal hasta incorporar una base de datos)
 let concesionarios = [
   {
