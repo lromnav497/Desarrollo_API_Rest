@@ -1,5 +1,6 @@
 const express = require("express");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const helmet = require("helmet"); // Requiere Helmet
 
 // Inicializamos la aplicación
 const app = express();
@@ -8,6 +9,7 @@ const uri = "mongodb+srv://lromnav497:lromnav497@cluster0.g0des.mongodb.net/?ret
 
 // Indicamos que la aplicación puede recibir JSON (API Rest)
 app.use(express.json());
+app.use(helmet()); // Usa Helmet
 
 // Indicamos el puerto en el que vamos a desplegar la aplicación
 const port = process.env.PORT || 8080;
@@ -44,7 +46,7 @@ async function run() {
     // Obtener un concesionario por ID
     app.get("/concesionarios/:id", async (request, response) => {
       const id = request.params.id;
-      const concesionario = await concesionariosCollection.findOne({ _id: new MongoClient.ObjectID(id) });
+      const concesionario = await concesionariosCollection.findOne({ _id: new ObjectId(id) });
       response.json(concesionario);
     });
 
@@ -52,7 +54,7 @@ async function run() {
     app.put("/concesionarios/:id", async (request, response) => {
       const id = request.params.id;
       const result = await concesionariosCollection.updateOne(
-        { _id: new MongoClient.ObjectID(id) },
+        { _id: new ObjectId(id) },
         { $set: request.body }
       );
       response.json({ message: "Concesionario actualizado", modifiedCount: result.modifiedCount });
@@ -61,14 +63,14 @@ async function run() {
     // Borrar un concesionario por ID
     app.delete("/concesionarios/:id", async (request, response) => {
       const id = request.params.id;
-      const result = await concesionariosCollection.deleteOne({ _id: new MongoClient.ObjectID(id) });
+      const result = await concesionariosCollection.deleteOne({ _id: new ObjectId(id) });
       response.json({ message: "Concesionario borrado", deletedCount: result.deletedCount });
     });
 
     // Obtener todos los coches de un concesionario por ID
     app.get("/concesionarios/:id/coches", async (request, response) => {
       const id = request.params.id;
-      const concesionario = await concesionariosCollection.findOne({ _id: new MongoClient.ObjectID(id) });
+      const concesionario = await concesionariosCollection.findOne({ _id: new ObjectId(id) });
       response.json(concesionario.coches);
     });
 
@@ -77,7 +79,7 @@ async function run() {
       const id = request.params.id;
       const coche = request.body;
       const result = await concesionariosCollection.updateOne(
-        { _id: new MongoClient.ObjectID(id) },
+        { _id: new ObjectId(id) },
         { $push: { coches: coche } }
       );
       response.json({ message: "Coche añadido", modifiedCount: result.modifiedCount });
@@ -87,7 +89,7 @@ async function run() {
     app.get("/concesionarios/:id/coches/:cocheId", async (request, response) => {
       const id = request.params.id;
       const cocheId = request.params.cocheId;
-      const concesionario = await concesionariosCollection.findOne({ _id: new MongoClient.ObjectID(id) });
+      const concesionario = await concesionariosCollection.findOne({ _id: new ObjectId(id) });
       const coche = concesionario.coches.find(c => c._id.toString() === cocheId);
       response.json(coche);
     });
@@ -98,7 +100,7 @@ async function run() {
       const cocheId = request.params.cocheId;
       const coche = request.body;
       const result = await concesionariosCollection.updateOne(
-        { _id: new MongoClient.ObjectID(id), "coches._id": new MongoClient.ObjectID(cocheId) },
+        { _id: new ObjectId(id), "coches._id": new ObjectId(cocheId) },
         { $set: { "coches.$": coche } }
       );
       response.json({ message: "Coche actualizado", modifiedCount: result.modifiedCount });
@@ -109,8 +111,8 @@ async function run() {
       const id = request.params.id;
       const cocheId = request.params.cocheId;
       const result = await concesionariosCollection.updateOne(
-        { _id: new MongoClient.ObjectID(id) },
-        { $pull: { coches: { _id: new MongoClient.ObjectID(cocheId) } } }
+        { _id: new ObjectId(id) },
+        { $pull: { coches: { _id: new ObjectId(cocheId) } } }
       );
       response.json({ message: "Coche borrado", modifiedCount: result.modifiedCount });
     });
