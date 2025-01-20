@@ -73,16 +73,17 @@ async function run() {
       const concesionario = await concesionariosCollection.findOne({ _id: new ObjectId(id) });
       response.json(concesionario.coches);
     });
-
+    
     // Añadir un nuevo coche a un concesionario por ID
     app.post("/concesionarios/:id/coches", async (request, response) => {
       const id = request.params.id;
       const coche = request.body;
+      coche._id = new ObjectId(); // Genera un nuevo ObjectId para el coche
       const result = await concesionariosCollection.updateOne(
         { _id: new ObjectId(id) },
         { $push: { coches: coche } }
       );
-      response.json({ message: "Coche añadido", modifiedCount: result.modifiedCount });
+      response.json({ message: "Coche añadido", modifiedCount: result.modifiedCount, coche: coche });
     });
 
     // Obtener un coche por ID de un concesionario por ID
@@ -99,11 +100,26 @@ async function run() {
       const id = request.params.id;
       const cocheId = request.params.cocheId;
       const coche = request.body;
-      const result = await concesionariosCollection.updateOne(
-        { _id: new ObjectId(id), "coches._id": new ObjectId(cocheId) },
-        { $set: { "coches.$": coche } }
-      );
-      response.json({ message: "Coche actualizado", modifiedCount: result.modifiedCount });
+      try {
+        const concesionario = await concesionariosCollection.findOne({ _id: new ObjectId(id) });
+        if (!concesionario) {
+          return response.status(404).json({ message: "Concesionario no encontrado" });
+        }
+        const cocheIndex = concesionario.coches.findIndex(c => c._id.toString() === cocheId);
+        if (cocheIndex === -1) {
+          return response.status(404).json({ message: "Coche no encontrado" });
+        }
+        coche._id = concesionario.coches[cocheIndex]._id; // Mantén el _id original del coche
+        concesionario.coches[cocheIndex] = coche;
+        const result = await concesionariosCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { coches: concesionario.coches } }
+        );
+        response.json({ message: "Coche actualizado", modifiedCount: result.modifiedCount });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Error al actualizar el coche" });
+      }
     });
 
     // Borrar un coche por ID de un concesionario por ID
