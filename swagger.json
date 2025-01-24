@@ -1,0 +1,316 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Concesionarios API",
+    "version": "1.0.0",
+    "description": "API REST para gestionar concesionarios y sus coches"
+  },
+  "host": "localhost:8080",
+  "basePath": "/",
+  "schemes": ["http"],
+  "paths": {
+    "/concesionarios": {
+      "get": {
+        "summary": "Obtener todos los concesionarios",
+        "responses": {
+          "200": {
+            "description": "Lista de concesionarios sin ID de coches",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ConcesionarioSinIdCoche"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Crear un nuevo concesionario",
+        "parameters": [
+          {
+            "name": "concesionario",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConcesionarioInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Concesionario creado exitosamente"
+          }
+        }
+      }
+    },
+    "/concesionarios/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "summary": "Obtener un concesionario por ID",
+        "responses": {
+          "200": {
+            "description": "Concesionario encontrado",
+            "schema": {
+              "$ref": "#/definitions/Concesionario"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Actualizar un concesionario",
+        "parameters": [
+          {
+            "name": "concesionario",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConcesionarioInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Concesionario actualizado exitosamente"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar un concesionario",
+        "responses": {
+          "200": {
+            "description": "Concesionario eliminado exitosamente"
+          }
+        }
+      }
+    },
+    "/concesionarios/{id}/coches": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "summary": "Obtener todos los coches de un concesionario",
+        "responses": {
+          "200": {
+            "description": "Lista de coches",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CocheSinId"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Añadir un nuevo coche",
+        "parameters": [
+          {
+            "name": "coche",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CocheInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Coche añadido exitosamente"
+          }
+        }
+      }
+    },
+    "/concesionarios/{id}/coches/{cocheIndex}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "cocheIndex",
+          "in": "path",
+          "required": true,
+          "type": "integer"
+        }
+      ],
+      "get": {
+        "summary": "Obtener un coche específico por índice",
+        "responses": {
+          "200": {
+            "description": "Coche encontrado",
+            "schema": {
+              "$ref": "#/definitions/CocheSinId"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Actualizar un coche por índice",
+        "parameters": [
+          {
+            "name": "coche",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CocheInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Coche actualizado exitosamente"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar un coche por índice",
+        "responses": {
+          "200": {
+            "description": "Coche eliminado exitosamente"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Concesionario": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "nombre": {
+          "type": "string"
+        },
+        "ubicacion": {
+          "type": "string"
+        },
+        "coches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Coche"
+          }
+        }
+      }
+    },
+    "ConcesionarioSinIdCoche": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "nombre": {
+          "type": "string"
+        },
+        "ubicacion": {
+          "type": "string"
+        },
+        "coches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CocheSinId"
+          }
+        }
+      }
+    },
+    "Coche": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "integer"
+        },
+        "marca": {
+          "type": "string"
+        },
+        "modelo": {
+          "type": "string"
+        },
+        "año": {
+          "type": "integer"
+        },
+        "precio": {
+          "type": "number"
+        }
+      }
+    },
+    "CocheSinId": {
+      "type": "object",
+      "properties": {
+        "marca": {
+          "type": "string"
+        },
+        "modelo": {
+          "type": "string"
+        },
+        "año": {
+          "type": "integer"
+        },
+        "precio": {
+          "type": "number"
+        }
+      }
+    },
+    "ConcesionarioInput": {
+      "type": "object",
+      "properties": {
+        "nombre": {
+          "type": "string"
+        },
+        "ubicacion": {
+          "type": "string"
+        },
+        "coches": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "marca": {
+                "type": "string"
+              },
+              "modelo": {
+                "type": "string"
+              },
+              "año": {
+                "type": "integer"
+              },
+              "precio": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "CocheInput": {
+      "type": "object",
+      "properties": {
+        "marca": {
+          "type": "string"
+        },
+        "modelo": {
+          "type": "string"
+        },
+        "año": {
+          "type": "integer"
+        },
+        "precio": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
